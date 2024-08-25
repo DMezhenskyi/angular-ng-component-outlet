@@ -1,46 +1,45 @@
-import { Component, ComponentRef, inject, TemplateRef, Type, viewChild, ViewContainerRef } from "@angular/core";
+import { Component, inject, Type } from "@angular/core";
 import { WidgetComponent } from "./widget/widget.component";
 import { NgComponentOutlet } from "@angular/common";
 import { WeatherContentComponent } from "./widget/weather-content.component";
+import { HttpClient } from "@angular/common/http";
+import { map } from "rxjs";
+import { toSignal } from "@angular/core/rxjs-interop";
+
+interface WidgetKeys {
+  [key: string]: Type<any>
+}
+interface WidgetConfig {
+  widgetKey: string;
+  content: Node[][];
+  inputs: Record<string, any>
+}
 @Component({
   selector: "app-root",
   standalone: true,
   template: `
     <img class="logo" src="./logo.svg" alt="Decoded Frontend" />
     <h1 class="page-title">ngContentOutlet Demo</h1>
-    <ng-template #contentTpl>
-      <app-weather-content />
-    </ng-template>
     <main id="content">
-      <ng-container
-        [ngComponentOutlet]="component"
-        [ngComponentOutletInputs]="componentInputs"
-        [ngComponentOutletContent]="content"></ng-container>
-      <section class="toolbar">
-        <button (click)="createComponent()" class="create">Create Component</button>
-        <button (click)="destroyComponent()" class="destroy">Destroy Component</button>
-      </section>
+      @for (widget of widgets(); track $index) {
+        <ng-container
+          [ngComponentOutlet]="widget.widgetType"
+          [ngComponentOutletInputs]="widget.inputs"
+          [ngComponentOutletContent]="widget.content"></ng-container>
+      }
     </main>
   `,
   imports: [NgComponentOutlet, WeatherContentComponent]
 })
 export class AppComponent {
-  vcr = inject(ViewContainerRef);
-  contentTpl = viewChild<TemplateRef<unknown>>('contentTpl')
-  protected content: Node[][] = [];
-  protected component: Type<WidgetComponent> | null = null;
-  protected componentInputs = {
-    title: 'Weather',
-    description: 'Currently in Vienna:'
+  http = inject(HttpClient);
+  widgetTypes: WidgetKeys = {
+    weather: WidgetComponent
   }
-   
-  createComponent() {
-    this.content = [
-      this.vcr.createEmbeddedView(this.contentTpl()!).rootNodes
-    ]
-    this.component = WidgetComponent;
-  }
-  destroyComponent() {
-    this.component = null;
-  }
+  widgets = toSignal(this.http.get<WidgetConfig[]>(`./widgets-config.json`).pipe(
+    map(config => config.map(
+      c => ({
+        ...c, widgetType: this.widgetTypes[c.widgetKey]
+      })))
+  ))
 }

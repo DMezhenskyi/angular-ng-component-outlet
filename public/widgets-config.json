@@ -1,0 +1,20 @@
+
+[
+  {
+    "widgetKey": "reqularWidget",
+    "inputs": {
+      "title": "Weather",
+      "description": "Currently in Vienna: "
+    },
+    "content": []
+  },
+  {
+    "widgetKey": "reqularWidget",
+    "inputs": {
+      "title": "Velocity",
+      "description": "Team Performance:"
+    },
+    "content": []
+  }
+]
+
