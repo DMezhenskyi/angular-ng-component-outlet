@@ -23,7 +23,7 @@ interface WidgetConfig {
     <main id="content">
       @for (widget of widgets(); track $index) {
         <ng-container
-          [ngComponentOutlet]="widget.widgetType"
+          [ngComponentOutlet]="widget.widgetKey"
           [ngComponentOutletInputs]="widget.inputs"
           [ngComponentOutletContent]="widget.content"></ng-container>
       }
@@ -33,13 +33,13 @@ interface WidgetConfig {
 })
 export class AppComponent {
   http = inject(HttpClient);
-  widgetTypes: WidgetKeys = {
-    weather: WidgetComponent
+  widgetKeys: WidgetKeys = {
+    reqularWidget: WidgetComponent
   }
   widgets = toSignal(this.http.get<WidgetConfig[]>(`./widgets-config.json`).pipe(
     map(config => config.map(
       c => ({
-        ...c, widgetType: this.widgetTypes[c.widgetKey]
+        ...c, widgetKey: this.widgetKeys[c.widgetKey]
       })))
   ))
 }
