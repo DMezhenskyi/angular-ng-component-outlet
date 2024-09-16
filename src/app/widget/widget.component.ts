@@ -5,8 +5,8 @@ import { Component, input, output } from "@angular/core";
   standalone: true,
   template: `
     <div class="widget-header">
-      <div class="widget-title">{{ title() }}</div>
-      <div class="widget-sub-title">{{ description() }}</div>
+      <div data-testingId="title" class="widget-title">{{ title() }}</div>
+      <div data-testingId="sub-title" class="widget-sub-title">{{ description() }}</div>
       <!-- <button class="action" (click)="closed.emit()">close</button> -->
     </div>
     <div class="widget-content">

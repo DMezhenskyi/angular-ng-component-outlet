@@ -17,8 +17,8 @@ import { WeatherContentComponent } from "./widget/weather-content.component";
         [ngComponentOutletInputs]="componentInputs"
         [ngComponentOutletContent]="content"></ng-container>
       <section class="toolbar">
-        <button (click)="createComponent()" class="create">Create Component</button>
-        <button (click)="destroyComponent()" class="destroy">Destroy Component</button>
+        <button (click)="createComponent()" data-testingId="create" class="create">Create Component</button>
+        <button (click)="destroyComponent()" data-testingId="destroy" class="destroy">Destroy Component</button>
       </section>
     </main>
   `,
@@ -31,7 +31,7 @@ export class AppComponent {
   protected component: Type<WidgetComponent> | null = null;
   protected componentInputs = {
     title: 'Weather',
-    description: 'Currently in Vienna:'
+    description: 'Currently in Vienna'
   }
    
   createComponent() {
@@ -42,5 +42,6 @@ export class AppComponent {
   }
   destroyComponent() {
     this.component = null;
+    this.vcr.clear();
   }
 }
